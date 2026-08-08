@@ -1,0 +1,151 @@
+@import "tailwindcss";
+
+:root {
+  /* Colors - Light Theme (inspired by Fastcare and premium blue-accent design) */
+  --background: #f8fafc; /* Slate 50 */
+  --foreground: #0f172a; /* Slate 900 */
+  
+  --primary: #0284c7; /* Sky 600 - Main Brand Blue */
+  --primary-hover: #0369a1; /* Sky 700 */
+  --primary-light: #e0f2fe; /* Sky 100 */
+  
+  --accent: #f97316; /* Orange 500 - Highlight CTA */
+  --accent-hover: #ea580c; /* Orange 600 */
+  --accent-light: #ffedd5; /* Orange 100 */
+  
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  
+  --border: #e2e8f0; /* Slate 200 */
+  --muted: #64748b; /* Slate 500 */
+  --muted-light: #f1f5f9; /* Slate 100 */
+  
+  --success: #10b981; /* Emerald 500 */
+  --warning: #f59e0b; /* Amber 500 */
+  --error: #ef4444; /* Red 500 */
+  
+  /* Radii */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+}
+
+/* Explicit class-based dark theme */
+.dark {
+  --background: #0b132b; /* Deep Dark Navy */
+  --foreground: #f1f5f9; /* Slate 100 */
+  
+  --primary: #38bdf8; /* Sky 400 */
+  --primary-hover: #0ea5e9; /* Sky 500 */
+  --primary-light: #0c4a6e; /* Sky 900 */
+  
+  --accent: #fb923c; /* Orange 400 */
+  --accent-hover: #f97316; /* Orange 500 */
+  --accent-light: #7c2d12; /* Orange 900 */
+  
+  --card: #1c2541; /* Medium Slate Navy */
+  --card-foreground: #f1f5f9;
+  
+  --border: #334155; /* Slate 700 */
+  --muted: #94a3b8; /* Slate 400 */
+  --muted-light: #1e293b; /* Slate 800 */
+}
+
+/* System preferences dark theme */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0b132b; /* Deep Dark Navy */
+    --foreground: #f1f5f9; /* Slate 100 */
+    
+    --primary: #38bdf8; /* Sky 400 */
+    --primary-hover: #0ea5e9; /* Sky 500 */
+    --primary-light: #0c4a6e; /* Sky 900 */
+    
+    --accent: #fb923c; /* Orange 400 */
+    --accent-hover: #f97316; /* Orange 500 */
+    --accent-light: #7c2d12; /* Orange 900 */
+    
+    --card: #1c2541; /* Medium Slate Navy */
+    --card-foreground: #f1f5f9;
+    
+    --border: #334155; /* Slate 700 */
+    --muted: #94a3b8; /* Slate 400 */
+    --muted-light: #1e293b; /* Slate 800 */
+  }
+}
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-light: var(--primary-light);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-light: var(--accent-light);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
+  --color-muted-light: var(--muted-light);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+
+  --animate-fade-in: fade-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-slide-up: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-slide-in-right: slide-in-right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes slide-up {
+    from { transform: translateY(16px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  @keyframes slide-in-right {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+  }
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: var(--radius-md);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
+/* Print Styles */
+@media print {
+  body {
+    background: white;
+    color: black;
+  }
+  .no-print {
+    display: none !important;
+  }
+}
