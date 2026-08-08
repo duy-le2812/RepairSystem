@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { OrderItem } from '@/types';
+import { formatPrice, getStatusBadgeConfig } from '@/lib/format';
 
 function HistoryContent() {
   const [tickets, setTickets] = useState<OrderItem[]>([]);
@@ -54,10 +55,6 @@ function HistoryContent() {
     e.preventDefault();
     setPage(1);
     fetchHistory(1, searchQuery, statusFilter);
-  };
-
-  const formatPrice = (val: number) => {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
   };
 
   const formatDate = (dateStr: string) => {
@@ -231,6 +228,16 @@ function HistoryContent() {
                       <div>
                         <span className="text-muted block text-[10px]">Thiết bị & Hãng:</span>
                         <span className="font-bold text-foreground">{ticket.brand} {ticket.deviceModel} ({ticket.deviceType})</span>
+                        {(ticket.appointmentDate || ticket.appointmentTime) && (
+                          <p className="text-[10px] text-primary font-bold mt-1">
+                            Lịch hẹn: {ticket.appointmentDate} {ticket.appointmentTime ? `• ${ticket.appointmentTime}` : ''}
+                          </p>
+                        )}
+                        {ticket.branchName && (
+                          <p className="text-[10px] text-slate-500 font-semibold mt-0.5">
+                            Chi nhánh: {ticket.branchName}
+                          </p>
+                        )}
                       </div>
                       <div className="text-right">
                         <span className="text-muted block text-[10px]">Tổng chi phí báo giá:</span>

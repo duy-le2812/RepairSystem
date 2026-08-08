@@ -52,6 +52,7 @@ export default function Header() {
   // Navigation Links
   const navLinks = [
     { label: 'Trang Chủ', href: '/' },
+    { label: 'Danh Mục Dịch Vụ', href: '/services' },
     { label: 'Bảng Giá Dịch Vụ', href: '/price-list' },
     { label: 'Đặt Lịch Sửa Chữa', href: '/booking' },
     { label: 'Tra Cứu Tiến Độ', href: '/tracking' },
@@ -206,6 +207,24 @@ export default function Header() {
                         </p>
                         <p className="text-[10px] text-slate-500 uppercase mt-0.5">{user?.role === 'admin' ? 'Quản trị viên' : 'Khách hàng'}</p>
                       </div>
+                      {(user?.role === 'admin' || user?.role === 'staff' || user?.role === 'receptionist') && (
+                        <Link
+                          href="/staff/handover"
+                          onClick={() => setIsUserDropdownOpen(false)}
+                          className="block px-4 py-2 text-xs font-bold text-emerald-600 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+                        >
+                          Bàn Giao & Thanh Toán
+                        </Link>
+                      )}
+                      {(user?.role === 'admin' || user?.role === 'technician') && (
+                        <Link
+                          href="/technician/workboard"
+                          onClick={() => setIsUserDropdownOpen(false)}
+                          className="block px-4 py-2 text-xs font-bold text-indigo-600 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+                        >
+                          Technician Workboard
+                        </Link>
+                      )}
                       {user?.role === 'admin' && (
                         <Link
                           href="/admin"

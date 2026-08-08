@@ -19,11 +19,11 @@ export default function Footer() {
               <Wrench className="w-4 h-4" />
             </div>
             <span className="text-base font-black text-white tracking-tight">
-              Fix<span className="text-primary">Care</span>
+              Repair<span className="text-primary">System</span>
             </span>
           </Link>
           <p className="text-slate-400 leading-relaxed">
-            Hệ thống sửa chữa thiết bị công nghệ hàng đầu tại Việt Nam. Chúng tôi cam kết mang lại trải nghiệm sửa chữa trung thực, lấy ngay, bảo hành chu đáo nhất.
+            Hệ thống sửa chữa thiết bị công nghệ hàng đầu Việt Nam. Chúng tôi cam kết mang lại trải nghiệm sửa chữa trung thực, lấy ngay, bảo hành chu đáo nhất.
           </p>
           <div className="flex items-center gap-3 mt-2">
             <a href="#" className="w-8 h-8 rounded-full bg-slate-800 hover:bg-primary hover:text-white flex items-center justify-center text-slate-400 transition" aria-label="Facebook">
@@ -36,11 +36,9 @@ export default function Footer() {
                 <path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.518 3.5 12 3.5 12 3.5s-7.518 0-9.388.553a3.003 3.003 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.87.553 9.388.553 9.388.553s7.518 0 9.388-.553a3.003 3.003 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
               </svg>
             </a>
-            {/* Zalo text icon representation */}
             <a href="#" className="w-8 h-8 rounded-full bg-slate-800 hover:bg-primary hover:text-white flex items-center justify-center font-bold text-[10px] text-slate-400 transition" aria-label="Zalo">
               ZA
             </a>
-            {/* TikTok text icon representation */}
             <a href="#" className="w-8 h-8 rounded-full bg-slate-800 hover:bg-primary hover:text-white flex items-center justify-center font-bold text-[10px] text-slate-400 transition" aria-label="TikTok">
               TT
             </a>
@@ -54,23 +52,23 @@ export default function Footer() {
           </h3>
           <ul className="space-y-2.5">
             <li>
-              <Link href="/price-list?category=phone" className="hover:text-primary transition flex items-center gap-1.5">
-                Sửa Chữa iPhone & Android
+              <Link href="/services" className="hover:text-primary transition flex items-center gap-1.5">
+                Sửa Chữa Điện Thoại & Tablet
               </Link>
             </li>
             <li>
-              <Link href="/price-list?category=laptop" className="hover:text-primary transition flex items-center gap-1.5">
+              <Link href="/services" className="hover:text-primary transition flex items-center gap-1.5">
                 Sửa Chữa MacBook & Laptop
               </Link>
             </li>
             <li>
-              <Link href="/price-list?category=tablet" className="hover:text-primary transition flex items-center gap-1.5">
-                Sửa Chữa iPad & Máy Tính Bảng
+              <Link href="/price-list" className="hover:text-primary transition flex items-center gap-1.5">
+                Bảng Giá Chi Tiết Linh Kiện
               </Link>
             </li>
             <li>
-              <Link href="/price-list?category=watch" className="hover:text-primary transition flex items-center gap-1.5">
-                Sửa Chữa Apple Watch & Smartwatch
+              <Link href="/tracking" className="hover:text-primary transition flex items-center gap-1.5">
+                Tra Cứu Tiến Độ Sửa Chữa
               </Link>
             </li>
             <li>
@@ -139,22 +137,21 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
           <div className="space-y-1.5">
             <p className="text-slate-500 text-[10px] leading-relaxed">
-              &copy; {currentYear} FixCare. Bản quyền thuộc về Công ty TNHH Sửa Chữa Công Nghệ FixCare Việt Nam.
+              &copy; {currentYear} RepairSystem. Bản quyền thuộc về Hệ Thống Sửa Chữa Thiết Bị Điện Tử RepairSystem.
             </p>
             <p className="text-slate-500 text-[10px]">
-              Giấy chứng nhận đăng ký kinh doanh số 010839958 do Sở KH&ĐT Hà Nội cấp ngày 15/07/2018.
+              Giấy chứng nhận đăng ký kinh doanh số 010839958 do Sở KH&ĐT Hà Nội cấp.
             </p>
           </div>
           
           <div className="flex items-center gap-4 shrink-0">
-            {/* Ministry of Industry and Trade seal mockup */}
             <div className="border border-slate-800 rounded px-2 py-1 flex items-center gap-1 bg-slate-900 text-slate-500 text-[9px] font-bold select-none">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
               <span>ĐÃ ĐĂNG KÝ BỘ CÔNG THƯƠNG</span>
             </div>
             
             <p className="text-slate-650 text-[10px] flex items-center gap-1">
-              Made with <Heart className="w-3 h-3 text-red-500 fill-red-500" /> by FixCare Team
+              Made with <Heart className="w-3 h-3 text-red-500 fill-red-500" /> by RepairSystem Team
             </p>
           </div>
         </div>

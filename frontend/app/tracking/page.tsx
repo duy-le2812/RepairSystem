@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import ApiClient from '../../lib/api/client';
 import { OrderItem } from '../../types';
+import { formatPrice, getStatusBadgeConfig } from '../../lib/format';
 
 function TrackingContent() {
   const router = useRouter();
@@ -62,10 +63,6 @@ function TrackingContent() {
     const params = new URLSearchParams();
     params.set('q', inputVal.trim());
     router.push(`/tracking?${params.toString()}`);
-  };
-
-  const formatPrice = (value: number) => {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
   };
 
   const formatDate = (dateStr: string) => {
@@ -190,6 +187,20 @@ function TrackingContent() {
                       <span className="text-muted">Ngày tiếp nhận:</span>
                       <span className="text-right">{formatDate(selectedOrder.dateCreated)}</span>
                     </div>
+                    {(selectedOrder.appointmentDate || selectedOrder.appointmentTime) && (
+                      <div className="grid grid-cols-2">
+                        <span className="text-muted">Lịch hẹn:</span>
+                        <span className="font-bold text-right text-primary">
+                          {selectedOrder.appointmentDate} {selectedOrder.appointmentTime ? `• ${selectedOrder.appointmentTime}` : ''}
+                        </span>
+                      </div>
+                    )}
+                    {selectedOrder.branchName && (
+                      <div className="grid grid-cols-2">
+                        <span className="text-muted">Chi nhánh:</span>
+                        <span className="font-bold text-right truncate" title={selectedOrder.branchName}>{selectedOrder.branchName}</span>
+                      </div>
+                    )}
                     <div className="grid grid-cols-2">
                       <span className="text-muted">Dòng thiết bị:</span>
                       <span className="font-bold text-right">{selectedOrder.brand} {selectedOrder.deviceModel}</span>
@@ -506,10 +517,8 @@ function TrackingContent() {
 
 export default function TrackingPage() {
   return (
-    <ProtectedRoute>
-      <Suspense fallback={<div className="p-8 text-center text-muted">Đang kết xuất thông tin tra cứu...</div>}>
-        <TrackingContent />
-      </Suspense>
-    </ProtectedRoute>
+    <Suspense fallback={<div className="p-8 text-center text-muted">Đang kết xuất thông tin tra cứu...</div>}>
+      <TrackingContent />
+    </Suspense>
   );
 }

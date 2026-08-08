@@ -9,7 +9,7 @@ const INITIAL_MESSAGES: ChatMessage[] = [
   {
     id: 'welcome',
     sender: 'ai',
-    text: 'Xin chào! Em là **Trợ lý AI Hỗ trợ Sửa chữa** của FixCare. 🛠️\n\nEm có thể hỗ trợ kiểm tra nhanh giá linh kiện, dự đoán lỗi thiết bị và thời gian bảo hành. Anh/Chị đang gặp sự cố với thiết bị nào ạ?',
+    text: 'Xin chào! Em là **Trợ lý AI Hỗ trợ Sửa chữa** của RepairSystem. 🛠️\n\nEm có thể hỗ trợ kiểm tra nhanh giá linh kiện, dự đoán lỗi thiết bị và thời gian bảo hành. Anh/Chị đang gặp sự cố với thiết bị nào ạ?',
     timestamp: new Date()
   }
 ];
@@ -137,7 +137,7 @@ export default function AiChatbot() {
                 <h3 className="font-bold text-xs flex items-center gap-1.5">
                   Chẩn Đoán Lỗi AI <Sparkles className="w-3 h-3 text-accent fill-accent" />
                 </h3>
-                <span className="text-[10px] text-slate-400">FixCare AI Assistant • Trực tuyến</span>
+                <span className="text-[10px] text-slate-400">RepairSystem AI Assistant • Trực tuyến</span>
               </div>
             </div>
             <button

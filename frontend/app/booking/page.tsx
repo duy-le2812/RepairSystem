@@ -2,17 +2,19 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import ProtectedRoute from '@/components/auth/protected-route';
+import { useAuth } from '@/providers/auth-provider';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { 
   Smartphone, Laptop, Tablet, Watch, ChevronRight, ChevronLeft, 
-  MapPin, Calendar, Clock, User, Phone, CheckCircle2, Copy, Share2, Sparkles
+  MapPin, Calendar, Clock, User, Phone, CheckCircle2, Copy, Share2, Sparkles, AlertTriangle
 } from 'lucide-react';
-import { OrderItem } from '../../types';
+import { OrderItem, ServiceCatalogItem } from '../../types';
 import ApiClient from '../../lib/api/client';
 import { Branch } from '../../types';
+import { getServiceDetail } from '../../lib/api/catalog';
+import Link from 'next/link';
 
 // Zod Validation Schema
 const bookingSchema = z.object({
@@ -21,7 +23,12 @@ const bookingSchema = z.object({
   deviceModel: z.string().min(1, 'Vui lòng nhập model máy cụ thể'),
   symptoms: z.string().min(5, 'Mô tả triệu chứng tối thiểu 5 ký tự'),
   branchId: z.string().min(1, 'Vui lòng chọn chi nhánh gần bạn nhất'),
-  appointmentDate: z.string().min(1, 'Vui lòng chọn ngày hẹn'),
+  appointmentDate: z.string().min(1, 'Vui lòng chọn ngày hẹn').refine(dateStr => {
+    const d = new Date(dateStr);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return !isNaN(d.getTime()) && d >= today;
+  }, 'Ngày hẹn không được ở trong quá khứ'),
   appointmentTime: z.string().min(1, 'Vui lòng chọn khung giờ hẹn'),
   customerName: z.string().min(2, 'Họ tên phải từ 2 ký tự trở lên'),
   phoneNumber: z.string().regex(/^(0[3|5|7|8|9])+([0-9]{8})$/, 'Số điện thoại không hợp lệ (độ dài 10 số bắt đầu bằng 0)'),
@@ -31,14 +38,18 @@ type BookingFormData = z.infer<typeof bookingSchema>;
 
 function BookingContent() {
   const searchParams = useSearchParams();
+  const { user, isAuthenticated } = useAuth();
   const defaultDevice = searchParams.get('device') || '';
   const defaultType = searchParams.get('type') || 'phone';
+  const paramServiceId = searchParams.get('serviceId');
 
   const [step, setStep] = useState(1);
   const [branches, setBranches] = useState<Branch[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [createdOrder, setCreatedOrder] = useState<OrderItem | null>(null);
   const [copiedId, setCopiedId] = useState(false);
+  const [selectedService, setSelectedService] = useState<ServiceCatalogItem | null>(null);
+  const [serviceError, setServiceError] = useState<string | null>(null);
 
   // Form Setup
   const {
@@ -67,6 +78,53 @@ function BookingContent() {
   // Watch fields for summaries
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const watchedValues = watch();
+
+  // Auto pre-fill user info if logged in
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      if (user.full_name || user.username) {
+        setValue('customerName', user.full_name || user.username, { shouldValidate: true });
+      }
+      if (user.phone) {
+        setValue('phoneNumber', user.phone, { shouldValidate: true });
+      }
+    }
+  }, [isAuthenticated, user, setValue]);
+
+  // Fetch serviceId if provided
+  useEffect(() => {
+    if (paramServiceId) {
+      const sId = Number(paramServiceId);
+      if (isNaN(sId)) {
+        setServiceError('Mã dịch vụ không hợp lệ');
+        return;
+      }
+      getServiceDetail(sId).then((svc) => {
+        if (!svc || !svc.isActive) {
+          setServiceError('Dịch vụ không tồn tại hoặc hiện không khả dụng.');
+        } else {
+          setSelectedService(svc);
+          if (svc.category) {
+            const catSlug = svc.category.slug.toLowerCase();
+            let dType: "phone" | "laptop" | "tablet" | "watch" | "other" = "phone";
+            if (catSlug.includes('laptop') || catSlug.includes('macbook')) dType = "laptop";
+            else if (catSlug.includes('tablet') || catSlug.includes('ipad')) dType = "tablet";
+            else if (catSlug.includes('watch')) dType = "watch";
+            setValue('deviceType', dType, { shouldValidate: true });
+          }
+          if (svc.brand) {
+            setValue('brand', svc.brand.name, { shouldValidate: true });
+          }
+          if (svc.model) {
+            setValue('deviceModel', svc.model.name, { shouldValidate: true });
+          }
+          setValue('symptoms', svc.serviceName, { shouldValidate: true });
+        }
+      }).catch(() => {
+        setServiceError('Không thể tải thông tin dịch vụ.');
+      });
+    }
+  }, [paramServiceId, setValue]);
 
   useEffect(() => {
     ApiClient.getBranches().then((data) => {
@@ -123,12 +181,15 @@ function BookingContent() {
         brand: data.brand,
         deviceModel: data.deviceModel,
         symptoms: data.symptoms,
-        branchId: data.branchId
+        branchId: data.branchId,
+        appointmentDate: data.appointmentDate,
+        appointmentTime: data.appointmentTime,
       });
       setCreatedOrder(order);
       setStep(5); // Confirmation Screen
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      alert(err.message || 'Tạo lịch hẹn thất bại. Vui lòng kiểm tra lại thông tin.');
     } finally {
       setSubmitting(false);
     }
@@ -139,7 +200,7 @@ function BookingContent() {
     return `${((step - 1) / 3) * 100}%`;
   };
 
-  const selectedBranchName = branches.find(b => b.id.toString() === watchedValues.branchId)?.name || '';
+  const selectedBranchName = branches.find(b => b.id.toString() === watchedValues.branchId)?.name || createdOrder?.branchName || '';
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-10 min-h-screen">
@@ -153,6 +214,21 @@ function BookingContent() {
           <p className="text-muted text-xs">
             Giảm ngay 10% chi phí hóa đơn. Hỗ trợ đặt chỗ trực tuyến chỉ mất 1 phút.
           </p>
+        </div>
+      )}
+
+      {serviceError && (
+        <div className="mb-6 p-4 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-2xl flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2 text-xs font-semibold text-amber-800 dark:text-amber-300">
+            <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0" />
+            <span>{serviceError}</span>
+          </div>
+          <Link
+            href="/services"
+            className="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl transition shrink-0"
+          >
+            Xem danh mục dịch vụ
+          </Link>
         </div>
       )}
 
@@ -484,7 +560,7 @@ function BookingContent() {
           <div className="space-y-2">
             <h1 className="text-xl md:text-2xl font-black text-foreground">Đặt Lịch Hẹn Thành Công!</h1>
             <p className="text-muted text-xs leading-relaxed max-w-sm mx-auto">
-              Hệ thống đã phê duyệt lịch của bạn. Nhân viên của FixCare sẽ liên hệ bằng số hotline để xác nhận lịch hẹn trong 10-15 phút tới.
+              Hệ thống đã phê duyệt lịch của bạn. Nhân viên của RepairSystem sẽ liên hệ bằng số hotline để xác nhận lịch hẹn trong 10-15 phút tới.
             </p>
           </div>
 
@@ -522,7 +598,7 @@ function BookingContent() {
               <span className="text-right">{createdOrder.deviceType === 'phone' ? 'Thay linh kiện điện thoại' : 'Sửa chữa phần cứng'}</span>
               <span className="text-muted font-bold">Thời gian nhận máy:</span>
               <span className="text-right font-bold text-primary">
-                {watchedValues.appointmentDate} • {watchedValues.appointmentTime}
+                {createdOrder.appointmentDate || watchedValues.appointmentDate} • {createdOrder.appointmentTime || watchedValues.appointmentTime}
               </span>
               <span className="text-muted font-bold">Địa chỉ chi nhánh:</span>
               <span className="text-right truncate max-w-[200px]" title={selectedBranchName}>{selectedBranchName}</span>
@@ -572,10 +648,8 @@ function BookingContent() {
 
 export default function BookingPage() {
   return (
-    <ProtectedRoute>
-      <Suspense fallback={<div className="p-8 text-center text-muted">Đang tải biểu mẫu đặt lịch...</div>}>
-        <BookingContent />
-      </Suspense>
-    </ProtectedRoute>
+    <Suspense fallback={<div className="p-8 text-center text-muted">Đang tải biểu mẫu đặt lịch...</div>}>
+      <BookingContent />
+    </Suspense>
   );
 }

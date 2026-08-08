@@ -107,19 +107,128 @@ class DeviceResponse(DeviceBase):
     model_config = ConfigDict(from_attributes=True)
 
 # ==========================================
-# 3. SCHEMAS CHO BẢNG SERVICES (Dịch vụ)
+# ==========================================
+# 2.5 SCHEMAS CHO SERVICE CATALOG (Task 03)
+# ==========================================
+class CategoryBase(BaseModel):
+    name: str
+    slug: Optional[str] = None
+    description: Optional[str] = None
+
+class CategoryCreate(CategoryBase):
+    pass
+
+class CategoryUpdate(BaseModel):
+    name: Optional[str] = None
+    slug: Optional[str] = None
+    description: Optional[str] = None
+    is_active: Optional[bool] = None
+
+class CategoryResponse(CategoryBase):
+    id: int
+    slug: str
+    is_active: bool
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+class CategorySimple(BaseModel):
+    id: int
+    name: str
+    slug: str
+    model_config = ConfigDict(from_attributes=True)
+
+
+class BrandBase(BaseModel):
+    category_id: int
+    name: str
+    slug: Optional[str] = None
+    description: Optional[str] = None
+
+class BrandCreate(BrandBase):
+    pass
+
+class BrandUpdate(BaseModel):
+    category_id: Optional[int] = None
+    name: Optional[str] = None
+    slug: Optional[str] = None
+    description: Optional[str] = None
+    is_active: Optional[bool] = None
+
+class BrandResponse(BrandBase):
+    id: int
+    category_id: int
+    name: str
+    slug: str
+    is_active: bool
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+class BrandSimple(BaseModel):
+    id: int
+    name: str
+    slug: str
+    model_config = ConfigDict(from_attributes=True)
+
+
+class DeviceModelBase(BaseModel):
+    brand_id: int
+    name: str
+    slug: Optional[str] = None
+    description: Optional[str] = None
+
+class DeviceModelCreate(DeviceModelBase):
+    pass
+
+class DeviceModelUpdate(BaseModel):
+    brand_id: Optional[int] = None
+    name: Optional[str] = None
+    slug: Optional[str] = None
+    description: Optional[str] = None
+    is_active: Optional[bool] = None
+
+class DeviceModelResponse(DeviceModelBase):
+    id: int
+    brand_id: int
+    name: str
+    slug: str
+    is_active: bool
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+class DeviceModelSimple(BaseModel):
+    id: int
+    name: str
+    slug: str
+    model_config = ConfigDict(from_attributes=True)
+
+
+# ==========================================
+# 3. SCHEMAS CHO BẢNG SERVICES (Nâng cấp Task 03)
 # ==========================================
 class ServiceBase(BaseModel):
     service_name: str
     description: Optional[str] = None
     base_price: Decimal
+    model_id: Optional[int] = None
+    estimated_duration_minutes: Optional[int] = 60
+    warranty_months: Optional[int] = 6
 
 class ServiceCreate(ServiceBase):
     pass
 
 class ServiceResponse(ServiceBase):
     id: int
-    
+    is_active: bool = True
+    model: Optional[DeviceModelSimple] = None
+    brand: Optional[BrandSimple] = None
+    category: Optional[CategorySimple] = None
+
     model_config = ConfigDict(from_attributes=True)
 
 # ==========================================
@@ -176,6 +285,8 @@ class BookingCreate(BaseModel):
     device_model: str
     symptoms: str  # Triệu chứng/mô tả sự cố
     branch_id: Optional[str] = None  # Chi nhánh (optional)
+    appointment_date: Optional[str] = None  # Ngày hẹn (YYYY-MM-DD)
+    appointment_time: Optional[str] = None  # Khung giờ hẹn
 
 class BookingResponse(BaseModel):
     """
@@ -193,6 +304,10 @@ class BookingResponse(BaseModel):
     device_model: str
     status: str  # Trạng thái phiếu (Tiếp nhận, Đang sửa, ...)
     created_at: datetime
+    appointment_date: Optional[str] = None
+    appointment_time: Optional[str] = None
+    branch_id: Optional[str] = None
+    branch_name: Optional[str] = None
     
     model_config = ConfigDict(from_attributes=True)
 
@@ -235,7 +350,8 @@ class QuotationCreate(BaseModel):
     additional_cost: Decimal = Field(Decimal(0), ge=0)
     warranty: Optional[str] = "6 tháng"
     notes: Optional[str] = None
-    parts: List[QuotationItemCreate] = Field(..., min_length=1)
+    is_draft: Optional[bool] = False
+    parts: List[QuotationItemCreate] = Field(default=[], min_length=0)
 
 class QuotationResponse(BaseModel):
     id: int
@@ -272,6 +388,139 @@ class TicketHistoryResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 # ==========================================
+# 13. SCHEMAS CHO TECHNICIAN & REPAIR EXECUTION (TASK 06)
+# ==========================================
+class ActualPartUsedCreate(BaseModel):
+    part_name: str = Field(..., min_length=1)
+    unit_price: Decimal = Field(..., ge=0)
+    quantity: int = Field(1, ge=1)
+
+class ActualPartUsedResponse(BaseModel):
+    id: int
+    ticket_id: int
+    part_name: str
+    unit_price: Decimal
+    quantity: int
+    subtotal: Decimal
+    model_config = ConfigDict(from_attributes=True)
+
+class RepairExecutionUpdate(BaseModel):
+    parts_used: Optional[List[ActualPartUsedCreate]] = []
+    repair_result: Optional[str] = None
+
+class QCCheckRequest(BaseModel):
+    result: str = Field(..., pattern="^(passed|failed|PASS|FAIL)$")
+    note: Optional[str] = None
+
+class TechnicianAssignmentRequest(BaseModel):
+    technician_id: int
+
+# ==========================================
+# 14. SCHEMAS CHO PAYMENT, INVOICE & HANDOVER (TASK 07)
+# ==========================================
+class PaymentRequest(BaseModel):
+    amount: Decimal
+    payment_method: str = Field(..., pattern="^(CASH|BANK_TRANSFER)$")
+    transaction_reference: Optional[str] = None
+
+class PaymentResponse(BaseModel):
+    id: int
+    ticket_id: int
+    amount: Decimal
+    payment_method: str
+    payment_status: str
+    transaction_reference: Optional[str] = None
+    paid_at: datetime
+    received_by_id: int
+    model_config = ConfigDict(from_attributes=True)
+
+class InvoiceResponse(BaseModel):
+    id: int
+    ticket_id: int
+    invoice_number: str
+    customer_name_snapshot: str
+    phone_snapshot: str
+    device_snapshot: str
+    service_snapshot: Optional[str] = None
+    warranty_snapshot: Optional[str] = None
+    quotation_amount: Decimal
+    total_amount: Decimal
+    payment_method: str
+    issued_at: datetime
+    issued_by_id: int
+    model_config = ConfigDict(from_attributes=True)
+
+# ==========================================
+# 15. SCHEMAS CHO DASHBOARD OVERVIEW (TASK 08)
+# ==========================================
+class DashboardSummaryResponse(BaseModel):
+    total_tickets: int
+    active_repairs: int
+    waiting_customer: int
+    ready_for_pickup: int
+    completed: int
+    total_customers: int
+    revenue: Decimal
+
+class StatusCountItem(BaseModel):
+    status: str
+    label: str
+    count: int
+
+class RevenueByDateItem(BaseModel):
+    date: str
+    revenue: Decimal
+
+class DeviceStatItem(BaseModel):
+    name: str
+    count: int
+    percentage: float
+
+class BrandStatItem(BaseModel):
+    name: str
+    count: int
+
+class ServiceStatItem(BaseModel):
+    name: str
+    count: int
+
+class TechnicianPerformanceItem(BaseModel):
+    technician_id: int
+    technician_name: str
+    assigned_count: int
+    completed_count: int
+    qc_passed_count: int
+    qc_failed_count: int
+
+class OutstandingTicketItem(BaseModel):
+    ticket_code: str
+    numeric_id: int
+    device_model: str
+    status: str
+    status_label: str
+    created_at: str
+    aging_days: int
+
+class RecentActivityItem(BaseModel):
+    ticket_code: str
+    action: str
+    actor_name: Optional[str] = None
+    actor_role: Optional[str] = None
+    details: Optional[str] = None
+    timestamp: str
+
+class DashboardOverviewResponse(BaseModel):
+    summary: DashboardSummaryResponse
+    status_distribution: List[StatusCountItem]
+    revenue_by_date: List[RevenueByDateItem]
+    popular_devices: List[DeviceStatItem]
+    popular_brands: List[BrandStatItem]
+    popular_services: List[ServiceStatItem]
+    technician_performance: List[TechnicianPerformanceItem]
+    outstanding_tickets: List[OutstandingTicketItem]
+    recent_activity: List[RecentActivityItem]
+
+# ==========================================
 # 7. SCHEMAS CHO TRACKING (Timeline Event)
 # ==========================================
 class TimelineEventResponse(BaseModel):
@@ -295,6 +544,9 @@ class TrackingResponse(BaseModel):
     deviceModel: str
     symptoms: str
     branchId: Optional[str] = None
+    branchName: Optional[str] = None
+    appointmentDate: Optional[str] = None
+    appointmentTime: Optional[str] = None
     status: str
     totalPrice: int = 0
     dateCreated: str
@@ -372,6 +624,10 @@ class ServiceUpdate(BaseModel):
     service_name: Optional[str] = None
     description: Optional[str] = None
     base_price: Optional[Decimal] = None
+    model_id: Optional[int] = None
+    estimated_duration_minutes: Optional[int] = None
+    warranty_months: Optional[int] = None
+    is_active: Optional[bool] = None
 
 class UserRoleUpdate(BaseModel):
     role: str

@@ -17,6 +17,10 @@ interface BackendBookingResponse {
   device_model: string;
   status: string;
   created_at: string;
+  appointment_date?: string;
+  appointment_time?: string;
+  branch_id?: string;
+  branch_name?: string;
 }
 
 /**
@@ -31,7 +35,10 @@ function mapBackendBookingToOrderItem(booking: BackendBookingResponse): OrderIte
     brand: booking.brand,
     deviceModel: booking.device_model,
     symptoms: '', // Backend không trả về triệu chứng gốc
-    branchId: '', // Backend không trả về branch ID
+    branchId: booking.branch_id ? String(booking.branch_id) : '',
+    branchName: booking.branch_name || '',
+    appointmentDate: booking.appointment_date || '',
+    appointmentTime: booking.appointment_time || '',
     status: 'received', // Map status từ backend sang frontend
     totalPrice: 0, // Backend sẽ tính sau
     dateCreated: booking.created_at,
@@ -83,6 +90,8 @@ export async function createBooking(data: {
   deviceModel: string;
   symptoms: string;
   branchId: string;
+  appointmentDate?: string;
+  appointmentTime?: string;
 }): Promise<OrderItem> {
   try {
     // Call Backend API
@@ -96,6 +105,8 @@ export async function createBooking(data: {
         device_model: data.deviceModel,
         symptoms: data.symptoms,
         branch_id: data.branchId,
+        appointment_date: data.appointmentDate,
+        appointment_time: data.appointmentTime,
       }),
     });
 
@@ -103,7 +114,8 @@ export async function createBooking(data: {
       if (response.status === 401) {
         handleUnauthorized();
       }
-      throw new Error(`Backend API error: ${response.status}`);
+      const errJson = await response.json().catch(() => ({}));
+      throw new Error(errJson.detail || `Backend API error: ${response.status}`);
     }
 
     const backendBooking: BackendBookingResponse = await response.json();

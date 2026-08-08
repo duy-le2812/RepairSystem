@@ -14,8 +14,8 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "FixCare - Hệ Thống Sửa Chữa Thiết Bị Điện Tử Uy Tín",
-  description: "Dịch vụ sửa chữa điện thoại, laptop, iPad chuyên nghiệp, thay màn hình, thay pin lấy ngay với sự hỗ trợ định giá từ AI thông minh.",
+  title: "RepairSystem - Hệ Thống Sửa Chữa Thiết Bị Điện Tử Chuyên Nghiệp",
+  description: "Dịch vụ sửa chữa điện thoại, laptop, iPad chuyên nghiệp, thay màn hình, thay pin lấy ngay với quy trình minh bạch, uy tín và bảo hành chính hãng.",
 };
 
 export const viewport: Viewport = {

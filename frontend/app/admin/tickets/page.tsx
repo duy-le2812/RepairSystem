@@ -174,10 +174,10 @@ export default function TicketsPage() {
     return partsSum + Number(laborCost || 0) + Number(additionalCost || 0);
   };
 
-  const handleSaveQuotation = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSaveQuotation = async (e?: React.FormEvent, isDraft = false) => {
+    if (e) e.preventDefault();
     if (!quoteTicket) return;
-    if (quoteParts.some(p => !p.part_name.trim())) {
+    if (!isDraft && quoteParts.some(p => !p.part_name.trim())) {
       alert('Vui lòng nhập tên đầy đủ cho tất cả linh kiện!');
       return;
     }
@@ -189,11 +189,14 @@ export default function TicketsPage() {
         additional_cost: Number(additionalCost),
         warranty,
         notes: quoteNotes,
-        parts: quoteParts.map(p => ({
-          part_name: p.part_name.trim(),
-          unit_price: Number(p.unit_price),
-          quantity: Number(p.quantity)
-        }))
+        is_draft: isDraft,
+        parts: quoteParts
+          .filter(p => isDraft ? p.part_name.trim() !== '' : true)
+          .map(p => ({
+            part_name: p.part_name.trim(),
+            unit_price: Number(p.unit_price),
+            quantity: Number(p.quantity)
+          }))
       });
       setQuoteTicket(null);
       fetchTickets();
@@ -326,12 +329,20 @@ export default function TicketsPage() {
                       <td className="px-6 py-4">
                         <p className="font-semibold text-slate-800 dark:text-slate-200">{ticket.customerName}</p>
                         <p className="text-xs text-slate-500">{ticket.phoneNumber}</p>
+                        {ticket.branchName && (
+                          <p className="text-[10px] text-blue-600 font-bold mt-0.5">{ticket.branchName}</p>
+                        )}
                       </td>
 
                       {/* Thiết Bị */}
                       <td className="px-6 py-4">
                         <p className="font-medium text-slate-800 dark:text-slate-200">{ticket.brand} {ticket.deviceModel}</p>
                         <p className="text-xs text-slate-500 truncate max-w-xs" title={ticket.symptoms}>Lỗi: {ticket.symptoms}</p>
+                        {(ticket.appointmentDate || ticket.appointmentTime) && (
+                          <p className="text-[10px] text-amber-600 font-bold mt-0.5">
+                            Hẹn: {ticket.appointmentDate} {ticket.appointmentTime}
+                          </p>
+                        )}
                       </td>
 
                       {/* Trạng Thái */}
@@ -629,14 +640,22 @@ export default function TicketsPage() {
                 <button
                   type="button"
                   onClick={() => setQuoteTicket(null)}
-                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold"
+                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold cursor-pointer"
                 >
                   Hủy
                 </button>
                 <button
+                  type="button"
+                  disabled={quoteSubmitting}
+                  onClick={() => handleSaveQuotation(undefined, true)}
+                  className="px-4 py-2 bg-slate-700 hover:bg-slate-800 text-white rounded-xl text-xs font-bold cursor-pointer"
+                >
+                  Lưu Nháp
+                </button>
+                <button
                   type="submit"
                   disabled={quoteSubmitting}
-                  className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-600/20"
+                  className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-600/20 cursor-pointer"
                 >
                   {quoteSubmitting ? 'Đang gửi...' : 'Gửi Báo Giá Cho Khách'}
                 </button>

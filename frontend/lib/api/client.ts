@@ -70,6 +70,8 @@ export class ApiClient {
     deviceModel: string;
     symptoms: string;
     branchId: string;
+    appointmentDate?: string;
+    appointmentTime?: string;
   }): Promise<OrderItem> {
     return createBooking(data);
   }

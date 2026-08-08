@@ -142,10 +142,21 @@ body {
 /* Print Styles */
 @media print {
   body {
-    background: white;
-    color: black;
+    background: white !important;
+    color: black !important;
+    font-size: 12pt;
   }
-  .no-print {
+  header, footer, nav, sidebar, .no-print, [role="navigation"] {
     display: none !important;
+  }
+  .printable-area {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    background: white !important;
+    color: black !important;
   }
 }

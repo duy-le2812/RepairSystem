@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Search, SlidersHorizontal, Smartphone, Laptop, Tablet, Watch, ShieldCheck, Clock, CalendarDays, AlertCircle } from 'lucide-react';
 import ApiClient from '../../lib/api/client';
 import { ServiceItem } from '../../types';
+import { formatPrice } from '../../lib/format';
 
 function PriceListContent() {
   const router = useRouter();
@@ -73,10 +74,6 @@ function PriceListContent() {
     const val = e.target.value;
     setSearchQuery(val);
     updateParams(selectedCategory, selectedBrand, val);
-  };
-
-  const formatPrice = (value: number) => {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
   };
 
   // Get brands based on category

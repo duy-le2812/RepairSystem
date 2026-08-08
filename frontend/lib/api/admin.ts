@@ -20,6 +20,17 @@ export async function getAdminStats(): Promise<AdminStats> {
   return response.json();
 }
 
+export async function getAdminDashboardOverview(range: string = 'month'): Promise<any> {
+  const response = await fetch(`${BASE_URL}/api/admin/dashboard/overview?range=${range}`, {
+    headers: getAuthHeaders(),
+  });
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.detail || 'Không thể tải dữ liệu Dashboard');
+  }
+  return response.json();
+}
+
 // ==========================================
 // PHIẾU SỬA CHỮA (TICKETS)
 // ==========================================
@@ -76,6 +87,7 @@ export async function saveQuotation(ticketId: number, data: {
   additional_cost: number;
   warranty?: string;
   notes?: string;
+  is_draft?: boolean;
   parts: Array<{ part_name: string; unit_price: number; quantity: number }>;
 }): Promise<any> {
   const response = await fetch(`${BASE_URL}/api/tickets/${ticketId}/quotation`, {

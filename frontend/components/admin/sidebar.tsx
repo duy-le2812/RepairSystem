@@ -21,7 +21,7 @@ export default function Sidebar() {
         <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white shrink-0">
           <WrenchIcon className="w-4 h-4" />
         </div>
-        <span className="text-lg font-bold text-white tracking-wide">FixCare Admin</span>
+        <span className="text-lg font-bold text-white tracking-wide">RepairSystem Admin</span>
       </div>
 
       <nav className="flex-1 py-6 px-3 space-y-1 overflow-y-auto">

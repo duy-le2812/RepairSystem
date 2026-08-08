@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Search, Sparkles, X, ChevronRight, Laptop, Smartphone, ShieldCheck, Clock } from 'lucide-react';
 import ApiClient from '../../lib/api/client';
 import { ServiceItem } from '../../types';
+import { formatPrice } from '../../lib/format';
 
 export default function AiSearchBar() {
   const router = useRouter();
@@ -89,10 +90,6 @@ export default function AiSearchBar() {
     if (!query.trim()) return;
     router.push(`/price-list?search=${encodeURIComponent(query)}`);
     setIsOpen(false);
-  };
-
-  const formatPrice = (value: number) => {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
   };
 
   return (

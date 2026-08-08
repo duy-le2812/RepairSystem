@@ -7,6 +7,46 @@ export interface Branch {
   workingHours: string;
 }
 
+export interface Category {
+  id: number;
+  name: string;
+  slug: string;
+  description?: string;
+  isActive: boolean;
+}
+
+export interface Brand {
+  id: number;
+  categoryId: number;
+  name: string;
+  slug: string;
+  description?: string;
+  isActive: boolean;
+}
+
+export interface DeviceModel {
+  id: number;
+  brandId: number;
+  name: string;
+  slug: string;
+  description?: string;
+  isActive: boolean;
+}
+
+export interface ServiceCatalogItem {
+  id: number;
+  serviceName: string;
+  description?: string;
+  basePrice: number;
+  modelId?: number;
+  estimatedDurationMinutes: number;
+  warrantyMonths: number;
+  isActive: boolean;
+  model?: { id: number; name: string; slug: string };
+  brand?: { id: number; name: string; slug: string };
+  category?: { id: number; name: string; slug: string };
+}
+
 export interface ServiceItem {
   id: string;
   name: string;
@@ -17,6 +57,7 @@ export interface ServiceItem {
   warranty: string; // e.g., "6 tháng", "12 tháng"
   time: string;     // e.g., "30 - 45 phút", "1 - 2 ngày"
   popular?: boolean;
+  description?: string;
 }
 
 export interface Diagnosis {
@@ -81,6 +122,9 @@ export interface OrderItem {
   deviceModel: string;
   symptoms: string;
   branchId?: string;
+  branchName?: string;
+  appointmentDate?: string;
+  appointmentTime?: string;
   status: string;
   timeline: TimelineEvent[];
   totalPrice: number;

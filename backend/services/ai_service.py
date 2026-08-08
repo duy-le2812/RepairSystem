@@ -24,7 +24,7 @@ logger = logging.getLogger("ai_service")
 # ==========================================
 # SYSTEM PROMPT — Nhân cách của AI FixCare
 # ==========================================
-SYSTEM_PROMPT = """Bạn là nhân viên kỹ thuật của cửa hàng sửa chữa thiết bị điện tử FixCare.
+SYSTEM_PROMPT = """Bạn là nhân viên kỹ thuật của cửa hàng sửa chữa thiết bị điện tử RepairSystem.
 
 Nhiệm vụ của bạn:
 - Tư vấn lỗi và giải thích nguyên nhân một cách rõ ràng, dễ hiểu
